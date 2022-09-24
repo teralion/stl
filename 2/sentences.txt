@@ -1,0 +1,11 @@
+Inserts a new element in the multimap. This new element is constructed in place using args as the arguments for the construction of a value_type (which is an object of a pair type).
+
+This effectively increases the container size by one.
+
+Internally, multimap containers keep all their elements sorted by key following the criterion specified by its comparison object. The element is always inserted in its respective position following this ordering.
+
+The element is constructed in-place by calling allocator_traits::construct with args forwarded.
+
+A similar member function exists, insert, which either copies or moves existing objects into the container.
+
+The relative ordering of elements with equivalent keys is preserved, and newly inserted elements follow those with equivalent keys already in the container.
