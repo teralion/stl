@@ -26,7 +26,8 @@ public:
   }
 };
 
-csignal fourier_transform(const csignal &s, bool back = false) {
+csignal fourier_transform(const csignal &s, bool back = false)
+{
   csignal t (s.size());
   const double pol {2.0 * M_PI * (back ? -1.0 : 1.0)};
   const double div {back ? 1.0 : double(s.size())};
@@ -48,22 +49,53 @@ csignal fourier_transform(const csignal &s, bool back = false) {
   return t;
 }
 
-static auto gen_cosine(size_t period_len) {
+static auto gen_cosine(size_t period_len)
+{
   return [period_len, n{0}] () mutable {
     return cos(double(n++) * 2.0 * M_PI / period_len);
   };
 }
 
-static auto gen_square_wave(size_t period_len) {
+static auto gen_square_wave(size_t period_len)
+{
   return [period_len, n{period_len * 7/4}] () mutable {
     return ((n++ * 2 / period_len) % 2) * 2 - 1.0;
   };
 }
 
 template <typename F>
-static csignal signal_from_generator(size_t len, F gen) {
+static csignal signal_from_generator(size_t len, F gen)
+{
   csignal r(len);
   generate(begin(r), end(r), gen);
   return r;
 }
-// TODO: unfinished
+
+static void print_signal(const csignal &s)
+{
+  auto real_val ([](cmplx c) { return c.real(); });
+  transform(begin(s), end(s),
+    ostream_iterator<double>{cout, " "}, real_val);
+  cout << '\n';
+}
+
+int main()
+{
+  const size_t sig_len {100};
+
+  auto cosine (signal_from_generator(sig_len,
+    get_cosine(sig_len / 2)));
+  auto square_wave (signal_from_generator(sig_len,
+    gen_square_wave(sig_len / 2)));
+
+  auto trans_sqw (fourier_transform(square_wave));
+  fill (next(begin(trans_sqw), 10), prev(end(trans_sqw), 10), 0);
+  auto mid (fourier_transform(trans_sqw, true));
+
+  print_signal(cosine);
+  print_signal(fourier_transform(cosine));
+  print_signal(mid);
+  print_signal(trans_sqw);
+  print_signal(square_wave);
+  print_signal(fourier_transform(square_wave));
+}
