@@ -84,7 +84,7 @@ int main()
   const size_t sig_len {100};
 
   auto cosine (signal_from_generator(sig_len,
-    get_cosine(sig_len / 2)));
+    gen_cosine(sig_len / 2)));
   auto square_wave (signal_from_generator(sig_len,
     gen_square_wave(sig_len / 2)));
 
